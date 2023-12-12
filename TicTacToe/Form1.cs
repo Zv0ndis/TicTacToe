@@ -96,25 +96,33 @@ namespace TicTacToe
         {
             foreach (var Character in tableOfPoints)
             {
-                if(Character.TypeOf()==0)
-                {
-                    if (Math.Abs(e.X - Character.GetX()) < 19 && Math.Abs(e.Y - Character.GetY()) < 19 && isCrossTurn)
-                    {
-                        Character.SetType(1);
-                        CharacterDrawer.DrawRedCross(graphics, Character.GetX(), Character.GetY());
-                        break;
 
+                    if ((e.X - Character.GetX()) < 19 && ( e.Y - Character.GetY()) < 19 && isCrossTurn)
+                    {
+                        if (Character.TypeOf() == 0)
+                        {
+                            Character.SetType(1);
+                            CharacterDrawer.DrawRedCross(graphics, Character.GetX(), Character.GetY());
+                            WhichPlayerMoves();
+                            break;
+                        }
+                     break;
                     }
                     else if (Math.Abs(e.X - Character.GetX()) < 19 && Math.Abs(e.Y - Character.GetY()) < 19 && !isCrossTurn)
                     {
-                        CharacterDrawer.DrawBlueCircle(graphics, Character.GetX(), Character.GetY());
-                        Character.SetType(2);
+                        if (Character.TypeOf() == 0)
+                        {
+                            CharacterDrawer.DrawBlueCircle(graphics, Character.GetX(), Character.GetY());
+                            Character.SetType(2);
+                            WhichPlayerMoves();
+                            break;
+                        }
                         break;
+
                     }
-                }
 
             }
-            WhichPlayerMoves();
+
         }
 
         public void WhichPlayerMoves()
