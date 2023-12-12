@@ -20,7 +20,7 @@ namespace TicTacToe
         public static Graphics graphics;
         public bool isCrossTurn = true;
         //Declaration of tableOfPoints
-        CharacterSpace[,] tableOfPoints = new CharacterSpace[20, 20];
+        Character[,] tableOfPoints = new Character[20, 20];
         public Form1()
         {
             InitializeComponent();
@@ -60,7 +60,7 @@ namespace TicTacToe
             {
                 for (int y = 0; y < 20; y++)
                 {
-                    tableOfPoints[x, y] = new CharacterSpace(new Point(20*x,20 * y));
+                    tableOfPoints[x, y] = new Character(new Point(20*x,20 * y),0);
                 }
             }
         }
@@ -129,82 +129,6 @@ namespace TicTacToe
         {
             isCrossTurn=!isCrossTurn;
         }
-        //-----------USELESS--------
-        private void Form1_Paint(object sender, PaintEventArgs e)
-        {
 
-
-        }
-        private void Form1_MouseDown(object sender, MouseEventArgs e)
-        {
-
-        }
-        //------------!!!!!!!!--------
     }
-
-    //Class for Drawing Crosses and Circles
-    class CharacterDrawer
-    {
-        public static void DrawRedCross(Graphics graphics, int leftCornerX, int leftCornerY)
-        {
-            int crossSize = 20;
-
-            Pen redPen = new Pen(Color.Red, 2);
-
-            graphics.DrawLine(redPen, leftCornerX, leftCornerY, leftCornerX + crossSize, leftCornerY + crossSize);
-            graphics.DrawLine(redPen, leftCornerX + crossSize, leftCornerY, leftCornerX, leftCornerY + crossSize);
-            redPen.Dispose();
-        }
-
-
-        public static void DrawBlueCircle(Graphics graphics, int leftCornerX, int leftCornerY)
-        {
-            int circleSize = 18;
-
-            Pen bluePen = new Pen(Color.Blue, 2);
-            graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            graphics.DrawEllipse(bluePen, leftCornerX+1, leftCornerY+1, circleSize, circleSize);
-            bluePen.Dispose();
-        }
-    }
-
-    //Class for storing information abotu Characters in tableOfPoints 
-    class CharacterSpace
-    {
-        private int Type;
-        private Point LeftCornerInTable;
-
-        public CharacterSpace(Point LeftCornerInTable, int Type = 0)
-        {
-            this.Type = Type;
-            this.LeftCornerInTable = LeftCornerInTable;
-        }
-
-        public int GetX()
-        {
-            return LeftCornerInTable.X;
-        }
-        public int GetY()
-        {
-            return LeftCornerInTable.Y;
-        }
-
-        public void SetType(int Type)
-        {
-            this.Type= Type;
-        }
-
-        public int TypeOf()
-        {
-            switch (Type)
-            {
-                case 1: return 1;
-                case 2: return 2;
-            }
-            return 0;
-        }
-    }
-
-
-
 }
