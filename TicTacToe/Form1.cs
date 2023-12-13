@@ -6,6 +6,7 @@ using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading;
@@ -21,6 +22,7 @@ namespace TicTacToe
         public bool isCrossTurn = true;
         //Declaration of tableOfPoints
         Character[,] tableOfPoints = new Character[20, 20];
+
         public Form1()
         {
             InitializeComponent();
@@ -32,37 +34,9 @@ namespace TicTacToe
         {
             graphics = panel1.CreateGraphics();
             //Labels on X and Y axis
-            for (int i = 0; i < 20; i++)
-            {
-                Label label = new Label();
-                label.Text = $"{i + 1}";
-                label.TextAlign = ContentAlignment.MiddleCenter;
-                label.Location = new Point(panel1.Location.X+20*i,38-label.Font.Height*2);
-                label.Width = 20;
-                label.ForeColor = Color.Black;
-                label.BackColor = Color.Transparent;
-                Controls.Add(label);
-            }
-            for (int i = 0; i < 20; i++)
-            {
-                System.Windows.Forms.Label label = new Label();
-                label.Text = $"{i + 1}";
-                label.TextAlign = ContentAlignment.MiddleLeft;
-                label.Location = new Point(panel1.Location.X-20, panel1.Location.Y+ 20 * i);
-                label.Height = 20;
-                label.ForeColor = Color.Black;
-                label.BackColor = Color.Transparent;
-                Controls.Add(label);
-            }
-
+            CharacterDrawer.CreateLabelsForTable(panel1,Controls);
             //Creates an array full of Empty Characters in 20x20 grid 
-            for (int x = 0; x <20; x++)
-            {
-                for (int y = 0; y < 20; y++)
-                {
-                    tableOfPoints[x, y] = new Character(new Point(20*x,20 * y),0);
-                }
-            }
+            GameLogic.NewGame(tableOfPoints,ref isCrossTurn);
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
@@ -73,22 +47,45 @@ namespace TicTacToe
                 graphics.DrawLine(Pens.Black, 20 * x, 0, 20 * x,400 );
 
             }
+
             for (int x = 0; x < 21; x++)
             {
                 graphics.DrawLine(Pens.Black, 0, 20 * x, 400,20 * x);
 
             }
 
+            //characters 
             foreach(var Character in tableOfPoints)
             {
-                if (Character.TypeOf()==1)
+                switch(Character.TypeOf())
                 {
-                    CharacterDrawer.DrawRedCross(graphics, Character.GetX(), Character.GetY());
+                    case 1:
+                        if (Character.IsSelected())
+                        {
+                            CharacterDrawer.DrawRedCrossSelected(graphics, Character.GetX(), Character.GetY());
+                        }
+                        else
+                        {
+                            CharacterDrawer.DrawRedCross(graphics, Character.GetX(), Character.GetY());
+                        }
+
+                        break;
+
+                    case 2:
+
+                        if (Character.IsSelected())
+                        {
+                            CharacterDrawer.DrawBlueCircleSelected(graphics, Character.GetX(), Character.GetY());
+                        }
+                        else
+                        {
+                            CharacterDrawer.DrawBlueCircle(graphics, Character.GetX(), Character.GetY());
+                        }
+                        break;
+                    case 0: break;
+
                 }
-                else if(Character.TypeOf() == 2)
-                {
-                    CharacterDrawer.DrawBlueCircle(graphics, Character.GetX(), Character.GetY());
-                }
+
             }
         }
 
@@ -96,14 +93,13 @@ namespace TicTacToe
         {
             foreach (var Character in tableOfPoints)
             {
-
                     if ((e.X - Character.GetX()) < 19 && ( e.Y - Character.GetY()) < 19 && isCrossTurn)
                     {
                         if (Character.TypeOf() == 0)
                         {
                             Character.SetType(1);
                             CharacterDrawer.DrawRedCross(graphics, Character.GetX(), Character.GetY());
-                            WhichPlayerMoves();
+                            GameLogic.WhichPlayerMoves(ref isCrossTurn);
                             break;
                         }
                      break;
@@ -114,21 +110,31 @@ namespace TicTacToe
                         {
                             CharacterDrawer.DrawBlueCircle(graphics, Character.GetX(), Character.GetY());
                             Character.SetType(2);
-                            WhichPlayerMoves();
+                            GameLogic.WhichPlayerMoves(ref isCrossTurn);
                             break;
                         }
                         break;
-
                     }
-
             }
 
-        }
+            if(GameLogic.IsWin(tableOfPoints))
+            {
+                Refresh();
+                if (GameLogic.IsWin(tableOfPoints))
+                {
+                    DialogResult result = MessageBox.Show("Congratulations! You won! Do you want to start a new game?", "Game Won", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-        public void WhichPlayerMoves()
-        {
-            isCrossTurn=!isCrossTurn;
+                    if (result == DialogResult.Yes)
+                    {
+                        GameLogic.NewGame(tableOfPoints, ref isCrossTurn); // Assuming tableOfPoints is your 2D array of Character
+                        Refresh();
+                    }
+                    else
+                    {
+                        Close();
+                    }
+                }
+            }
         }
-
     }
 }
