@@ -27,16 +27,16 @@ namespace TicTacToe
         {
             InitializeComponent();
             this.Load += Form1_Load;
-;
+            ;
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             graphics = panel1.CreateGraphics();
             //Labels on X and Y axis
-            CharacterDrawer.CreateLabelsForTable(panel1,Controls);
+            CharacterDrawer.CreateLabelsForTable(panel1, Controls);
             //Creates an array full of Empty Characters in 20x20 grid 
-            GameLogic.NewGame(tableOfPoints,ref isCrossTurn);
+            GameLogic.NewGame(tableOfPoints, ref isCrossTurn);
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
@@ -44,20 +44,20 @@ namespace TicTacToe
             //lines on X and Y
             for (int x = 0; x < 21; x++)
             {
-                graphics.DrawLine(Pens.Black, 20 * x, 0, 20 * x,400 );
+                graphics.DrawLine(Pens.Black, 20 * x, 0, 20 * x, 400);
 
             }
 
             for (int x = 0; x < 21; x++)
             {
-                graphics.DrawLine(Pens.Black, 0, 20 * x, 400,20 * x);
+                graphics.DrawLine(Pens.Black, 0, 20 * x, 400, 20 * x);
 
             }
 
             //characters 
-            foreach(var Character in tableOfPoints)
+            foreach (var Character in tableOfPoints)
             {
-                switch(Character.TypeOf())
+                switch (Character.TypeOf())
                 {
                     case 1:
                         if (Character.IsSelected())
@@ -93,31 +93,33 @@ namespace TicTacToe
         {
             foreach (var Character in tableOfPoints)
             {
-                    if ((e.X - Character.GetX()) < 19 && ( e.Y - Character.GetY()) < 19 && isCrossTurn)
+                if ((e.X - Character.GetX()) < 19 && (e.Y - Character.GetY()) < 19 && isCrossTurn)
+                {
+                    if (Character.TypeOf() == 0)
                     {
-                        if (Character.TypeOf() == 0)
-                        {
-                            Character.SetType(1);
-                            CharacterDrawer.DrawRedCross(graphics, Character.GetX(), Character.GetY());
-                            GameLogic.WhichPlayerMoves(ref isCrossTurn);
-                            break;
-                        }
-                     break;
-                    }
-                    else if (Math.Abs(e.X - Character.GetX()) < 19 && Math.Abs(e.Y - Character.GetY()) < 19 && !isCrossTurn)
-                    {
-                        if (Character.TypeOf() == 0)
-                        {
-                            CharacterDrawer.DrawBlueCircle(graphics, Character.GetX(), Character.GetY());
-                            Character.SetType(2);
-                            GameLogic.WhichPlayerMoves(ref isCrossTurn);
-                            break;
-                        }
+                        Character.SetType(1);
+                        CharacterDrawer.DrawRedCross(graphics, Character.GetX(), Character.GetY());
+                        GameLogic.WhichPlayerMoves(ref isCrossTurn);
+                        Refresh();
                         break;
                     }
+                    break;
+                }
+                else if (Math.Abs(e.X - Character.GetX()) < 19 && Math.Abs(e.Y - Character.GetY()) < 19 && !isCrossTurn)
+                {
+                    if (Character.TypeOf() == 0)
+                    {
+                        CharacterDrawer.DrawBlueCircle(graphics, Character.GetX(), Character.GetY());
+                        Character.SetType(2);
+                        GameLogic.WhichPlayerMoves(ref isCrossTurn);
+                        Refresh();
+                        break;
+                    }
+                    break;
+                }
             }
 
-            if(GameLogic.IsWin(tableOfPoints))
+            if (GameLogic.IsWin(tableOfPoints))
             {
                 Refresh();
                 if (GameLogic.IsWin(tableOfPoints))
@@ -135,6 +137,13 @@ namespace TicTacToe
                     }
                 }
             }
+        }
+
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            Graphics graphics = e.Graphics;
+            graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            CharacterDrawer.DrawTurn(graphics, ref isCrossTurn);
         }
     }
 }
